@@ -37,6 +37,9 @@ ___
     type = NP_WareHouseType.objects.get(description="Поштомат")
     NP_City.objects.get(description="Київ").warehouses.filter(type=type, totalMaxWeightAllowed__gte=15).all()
 
+    # Getting all working warehouses
+    NP_WareHouse.objects.filter(type="Working").all()
+
     # Run rebuild all data
     Novaposhta().rebuild_data()
     # Run updating data (adding new adresses to DB) 

@@ -38,7 +38,7 @@ class NP_WareHouse(models.Model):
     ref = models.CharField(max_length=36, unique=True)
     city = models.ForeignKey(NP_City, on_delete=models.CASCADE, related_name='warehouses')
     type = models.ForeignKey(NP_WareHouseType, on_delete=models.CASCADE, related_name='warehouses')
-
+    status = models.CharField(max_length=36, default="Working")
     siteKey = models.PositiveIntegerField()
 
     description = models.CharField(max_length=99)

@@ -39,6 +39,7 @@ class Novaposhta(Singleton):
             ref=elem['Ref'],
             city=cities.get(ref=elem['CityRef']),
             type=warehouses_types.get(ref=elem['TypeOfWarehouse']),
+            status=elem['WarehouseStatus'],
             siteKey=int(elem['SiteKey']),
             description=elem['Description'],
             description_ru=elem['DescriptionRu'],
