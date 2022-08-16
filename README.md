@@ -8,6 +8,8 @@ ___
 ## Installation
 Client is based on `python 3.6`
 
+Required `aenum` packgage `pip install aenum`
+
 You can install package by using pip:
  
 `pip install git+https://github.com/demirug/django-novaposhta`
@@ -44,3 +46,11 @@ ___
     Novaposhta().rebuild_data()
     # Run updating data (adding new adresses to DB) 
     Novaposhta.update_data()
+       
+    # Ways to track parsel
+    track: NP_Track = Novaposhta.track("tracknumber")
+    track: NP_TrackDetail = Novaposhta.track_detail("tracknumber", "phoneNumber")
+
+    # Check track status
+    if track.status == NP_TackStatus.RECEIVED:
+        doSomeThing()

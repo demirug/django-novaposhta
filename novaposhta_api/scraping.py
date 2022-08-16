@@ -15,7 +15,10 @@ class _Model:
         self.model_name = model_name
 
     def _call(self, api_method, props):
-        return self._client.send(self.model_name, api_method, props)['data']
+        data = self._client.send(self.model_name, api_method, props)['data']
+        if len(data) == 0:
+            return None
+        return data
 
 
 class _Address(_Model):
@@ -43,6 +46,23 @@ class _Address(_Model):
         return self._call("getCities", {})
 
 
+class _Tacking(_Model):
+    def __init__(self, client):
+        super().__init__(client, "TrackingDocument")
+
+    def track(self, track_number):
+        data = self._call("getStatusDocuments", {"Documents": [{"DocumentNumber": track_number}]})
+        if data is not None:
+            return data[0]
+        return data
+
+    def track_detail(self, track_number, phone):
+        data = self._call("getStatusDocuments", {"Documents": [{"DocumentNumber": track_number, "Phone": phone}]})
+        if data is not None:
+            return data[0]
+        return data
+
+
 class NP_Scrapping(Singleton):
 
     def __init__(self, api_key, api_endpoint="https://api.novaposhta.ua/v2.0/json/"):
@@ -63,3 +83,7 @@ class NP_Scrapping(Singleton):
     @property
     def address(self):
         return _Address(self)
+
+    @property
+    def tracking(self):
+        return _Tacking(self)
