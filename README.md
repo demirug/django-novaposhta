@@ -8,7 +8,7 @@ ___
 ## Installation
 Client is based on `python 3.6`
 
-Required `aenum` packgage `pip install aenum`
+Required `aenum` package `pip install aenum`
 
 You can install package by using pip:
  
@@ -27,25 +27,25 @@ ___
 
 ```python
     # Getting all warehouses in Kyiv
-    NP_City.objects.get(description="Київ").warehouses.all()
+    NP_City.objects.get(Description="Київ").warehouses.all()
     # Getting all Post machine in Odesa
-    NP_City.objects.get(description="Одеса").warehouses.filter(description="Поштомат")
+    NP_City.objects.get(Description="Одеса").warehouses.filter(Description="Поштомат")
     # Get all cities in Zaporizhzhia oblast
-    NP_Area.objects.get(description="Запорізька").cities.all()
+    NP_Area.objects.get(Description="Запорізька").cities.all()
     # All warehouses types
     NP_WareHouseType.objects.all()
 
     # Getting all post machine in Kyiv with allowed max parcel weight greater or equal 15
-    type = NP_WareHouseType.objects.get(description="Поштомат")
-    NP_City.objects.get(description="Київ").warehouses.filter(type=type, totalMaxWeightAllowed__gte=15).all()
+    type = NP_WareHouseType.objects.get(Description="Поштомат")
+    NP_City.objects.get(Description="Київ").warehouses.filter(Type=type, TotalMaxWeightAllowed__gte=15).all()
 
     # Getting all working warehouses
-    NP_WareHouse.objects.filter(type="Working").all()
+    NP_WareHouse.objects.filter(WarehouseStatus="Working").all()
 
     # Run rebuild all data
-    Novaposhta().rebuild_data()
+    Novaposhta().updater.rebuild_data()
     # Run updating data (adding new adresses to DB) 
-    Novaposhta.update_data()
+    Novaposhta.updater.update_data()
        
     # Ways to track parsel
     track: NP_Track = Novaposhta.track("tracknumber")
