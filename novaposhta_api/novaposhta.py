@@ -115,7 +115,7 @@ class Novaposhta(Singleton):
         if save:
             NP_Document(json=json.dumps(response))
 
-        return response['IntDocNumber']
+        return response['Ref'], response['IntDocNumber']
 
     def delete_document(self, document: NP_Document):
         status = self.scrapping.document.delete_document(document.Ref)
