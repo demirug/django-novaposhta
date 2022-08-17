@@ -3,6 +3,28 @@ import json
 from django.db import IntegrityError
 
 
+class NP_AdminReadOnlyMixin:
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_exclude(self, request, obj=None):
+        obj = super(NP_AdminReadOnlyMixin, self).get_exclude(request, obj)
+        if obj is None:
+            return ['json']
+        else:
+            data = list(obj)
+            data.append('json')
+
+            return data
+
+
 class NP_DirectJSONDataMixin:
     def __init__(self, api_json: dict, *args, **kwargs):
         super(NP_DirectJSONDataMixin, self).__init__(*args, **kwargs)
