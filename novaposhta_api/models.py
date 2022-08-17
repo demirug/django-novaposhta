@@ -3,6 +3,20 @@ from django.db import models
 from .mixins import NP_JSONDataMixin
 
 
+class NP_Document(NP_JSONDataMixin, models.Model):
+    Ref = models.CharField(max_length=36, unique=True)
+    IntDocNumber = models.CharField(max_length=36)
+
+    json = models.TextField()
+
+    class Meta:
+        verbose_name = "NP Document"
+        verbose_name_plural = "NP Documents"
+
+    def __str__(self):
+        return self.IntDocNumber
+
+
 class NP_CargoType(NP_JSONDataMixin, models.Model):
     Ref = models.CharField(max_length=36, unique=True)
     Description = models.CharField(max_length=36)
