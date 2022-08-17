@@ -3,6 +3,20 @@ import json
 from django.db import IntegrityError
 
 
+class NP_DirectJSONDataMixin:
+    def __init__(self, api_json: dict):
+        for key, value in api_json.items():
+            handled = False
+            if hasattr(self, f"handle_{key}"):
+                attr = getattr(self, f"handle_{key}")
+                if callable(attr):
+                    handled = True
+                    attr(value)
+
+            if not handled:
+                    setattr(self, key, value)
+
+
 class NP_JSONDataMixin:
 
     def __init__(self, *args, **kwargs):

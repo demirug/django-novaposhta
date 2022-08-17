@@ -49,8 +49,18 @@ ___
        
     # Ways to track parsel
     track: NP_Track = Novaposhta.track("tracknumber")
-    track: NP_TrackDetail = Novaposhta.track_detail("tracknumber", "phoneNumber")
+    track: NP_Track = Novaposhta.track("tracknumber", "phoneNumber") # For detail track
 
     # Check track status
-    if track.status == NP_TackStatus.RECEIVED:
+    
+    if track.StatusCode == NP_TackStatus.RECEIVED:
         doSomeThing()
+
+    # Track standart parsel data
+    track: NP_Track = np.track("tracknumber", "phoneNumber")
+    if track: # if track information correct
+        print(NP_TrackStatus.RECEIVED)
+        print(f"{track.WarehouseSender} -> {track.WarehouseRecipient} | {track.StatusCode}")
+        if track.is_Detail(): # If track contains available detail information
+            print(f"{track.SenderFullNameEW or track.SenderFullName}: {track.PhoneSender}")
+            print(f"{track.RecipientFullNameEW or track.RecipientFullName}: {track.PhoneRecipient}")
