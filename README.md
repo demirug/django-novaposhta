@@ -25,6 +25,7 @@ If you need you can rebuild all data (erase old and upload new) `manage.py novap
 ___
 ## Usage
 
+__Working with Area, City, Warehouse, WarehouseType__
 ```python
     # Getting all warehouses in Kyiv
     NP_City.objects.get(Description="Київ").warehouses.all()
@@ -41,12 +42,10 @@ ___
 
     # Getting all working warehouses
     NP_WareHouse.objects.filter(WarehouseStatus="Working").all()
+```
 
-    # Run rebuild all data
-    Novaposhta().updater.rebuild_data()
-    # Run updating data (adding new adresses to DB) 
-    Novaposhta.updater.update_data()
-       
+__Tracking documents__
+```python
     # Ways to track parsel
     track: NP_Track = Novaposhta.track("tracknumber")
     track: NP_Track = Novaposhta.track("tracknumber", "phoneNumber") # For detail track
@@ -64,3 +63,35 @@ ___
         if track.is_Detail(): # If track contains available detail information
             print(f"{track.SenderFullNameEW or track.SenderFullName}: {track.PhoneSender}")
             print(f"{track.RecipientFullNameEW or track.RecipientFullName}: {track.PhoneRecipient}")
+```
+
+__Create/Delete document__
+```python
+    # Creating new document
+    target = Recipient("Андрій", "Ваяків", "Буковінський", "+3806666666")
+
+    ref, track_number = np.create_document(
+        NP_WareHouse.objects.first(),  # from WareHouse
+        NP_WareHouse.objects.filter(City__Description="Сколе").first(),  # to WareHouse
+        1.5,  # Parsel Weight
+        1,  # Seats amount
+        1500,  # Declared price
+        "Test parsell entry",  # Description
+        target,  # Recipient
+        payer_type=PayerType.SENDER,  # PayerType (SENDER/RECIPIENT)
+        cargo_type=CargoType.PARCEL,  # CargoType (PARCEL/DOCUMENTS)
+        save=True  # Save to DB
+    )
+
+    # Ways to delete document
+    np.delete_document_ref(ref)
+    np.delete_document(NP_Document.objects.filter(IntDocNumber=track_number).first())
+```
+
+__Updating/Rebuilding data__
+```python
+    # Run rebuild all data
+    Novaposhta().updater.rebuild_data()
+    # Run updating data (adding new adresses to DB) 
+    Novaposhta.updater.update_data()
+```
