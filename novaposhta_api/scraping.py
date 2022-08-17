@@ -97,6 +97,9 @@ class _InternetDocument(_Model):
     def create_document(self, **kwargs):
         return _getfirst_elem(self._call("save", _kwargs_to_prams(**kwargs)))
 
+    def delete_document(self, ref):
+        return _getfirst_elem(self._call("delete", _kwargs_to_prams(DocumentRefs=ref)))
+
 
 class NP_Scrapping(Singleton):
 

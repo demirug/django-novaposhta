@@ -117,6 +117,18 @@ class Novaposhta(Singleton):
 
         return response['IntDocNumber']
 
+    def delete_document(self, document: NP_Document):
+        status = self.scrapping.document.delete_document(document.Ref)
+        if status and status['Ref'] == document.Ref:
+            document.delete()
+            return True
+        return False
+
+    def delete_document_ref(self, document_ref: str):
+        status = self.scrapping.document.delete_document(document_ref)
+        NP_Document.objects.filter(Ref=document_ref).delete()
+        return status and status['Ref'] == document_ref
+
     def track(self, track_number, phone=None):
 
         if phone:
