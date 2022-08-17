@@ -13,13 +13,15 @@ Required `aenum` package `pip install aenum`
 You can install package by using pip:
  
 `pip install git+https://github.com/demirug/django-novaposhta`
+
+Add `novaposhta_api` to `INSTALLED_APPS`
+
+Run migrations `manage.py migrate`
 ___
 ## Configuration
 
 1. Add `NOVAPOSHTA_KEY=YOUR_API_KEY` to Django config file
-
-2. `manage.py migrate`
-3. `manage.py novaposhta update` to upload all data to DB (require time)
+2. `manage.py novaposhta update` to upload all data to DB (require time)
 
 If you need you can rebuild all data (erase old and upload new) `manage.py novaposhta rebuild`
 ___
