@@ -5,6 +5,12 @@ import requests
 from .singleton import Singleton
 
 
+def _getfirst_elem(response):
+    if response is None:
+        return response
+    return response[0]
+
+
 def _kwargs_to_prams(**kwargs):
     return {k: v for k, v in kwargs.items()}
 
@@ -15,10 +21,12 @@ class _Model:
         self.model_name = model_name
 
     def _call(self, api_method, props):
-        data = self._client.send(self.model_name, api_method, props)['data']
-        if len(data) == 0:
+        response = self._client.send(self.model_name, api_method, props)
+        if response['success'] is False:
+            print(f"Novaposhta-API: Handled Un-success response at {self.model_name}: {api_method}")
+            print(response)
             return None
-        return data
+        return response['data']
 
 
 class _Address(_Model):
@@ -59,16 +67,35 @@ class _Tacking(_Model):
         super().__init__(client, "TrackingDocument")
 
     def track(self, track_number):
-        data = self._call("getStatusDocuments", {"Documents": [{"DocumentNumber": track_number}]})
-        if data is not None:
-            return data[0]
-        return data
+        return _getfirst_elem(self._call("getStatusDocuments", {"Documents": [{"DocumentNumber": track_number}]}))
 
     def track_detail(self, track_number, phone):
-        data = self._call("getStatusDocuments", {"Documents": [{"DocumentNumber": track_number, "Phone": phone}]})
-        if data is not None:
-            return data[0]
-        return data
+        return _getfirst_elem(self._call("getStatusDocuments", {"Documents": [{"DocumentNumber": track_number, "Phone": phone}]}))
+
+
+class _Counterparty(_Model):
+    def __init__(self, client):
+        super(_Counterparty, self).__init__(client, "Counterparty")
+
+    def getCounterparties(self, counterparty_property):
+        return self._call("getCounterparties", _kwargs_to_prams(CounterpartyProperty=counterparty_property))
+
+    def getCounterpartyContactPersons(self, ref):
+        return self._call("getCounterpartyContactPersons", _kwargs_to_prams(Ref=ref))
+
+    def create_Counterparty(self, counterparty_type, counterparty_property, firstname, middle_name, lastname, phone):
+        return self._call("save", _kwargs_to_prams(CounterpartyType=counterparty_type,
+                                                   CounterpartyProperty=counterparty_property,
+                                                   FirstName=firstname, MiddleName=middle_name, LastName=lastname,
+                                                   Phone=phone))
+
+
+class _InternetDocument(_Model):
+    def __init__(self, client):
+        super(_InternetDocument, self).__init__(client, "InternetDocument")
+
+    def create_document(self, **kwargs):
+        return _getfirst_elem(self._call("save", _kwargs_to_prams(**kwargs)))
 
 
 class NP_Scrapping(Singleton):
@@ -99,3 +126,11 @@ class NP_Scrapping(Singleton):
     @property
     def tracking(self):
         return _Tacking(self)
+
+    @property
+    def document(self):
+        return _InternetDocument(self)
+
+    @property
+    def counterparty(self):
+        return _Counterparty(self)

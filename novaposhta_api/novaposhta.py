@@ -1,8 +1,12 @@
+import json
+from datetime import datetime
+from enum import Enum
+
 from aenum import MultiValueEnum
 from django.conf import settings
 
 from .mixins import NP_DirectJSONDataMixin
-from .models import NP_WareHouse
+from .models import NP_WareHouse, NP_Document
 from .scraping import NP_Scrapping
 from .singleton import Singleton
 from .updater import Updater
@@ -48,12 +52,70 @@ class NP_Track(NP_DirectJSONDataMixin):
         return self.PhoneSender != "" and self.PhoneRecipient != ""
 
 
+class PayerType(Enum):
+    RECIPIENT = "Recipient"
+    SENDER = "Sender"
+
+
+class CargoType(Enum):
+    PARCEL = "Parcel"
+    DOCUMENTS = "Documents"
+
+
+class Recipient:
+
+    def __init__(self, first_name, middle_name, last_name, phone):
+        self.first_name = first_name
+        self.middle_name = middle_name
+        self.last_name = last_name
+        self.phone = phone
+
+
 class Novaposhta(Singleton):
 
     def __init__(self):
         self.api_key = settings.NOVAPOSHTA_KEY
         self.scrapping = NP_Scrapping(self.api_key)
         self.updater = Updater(self.scrapping)
+
+    def create_document(self, from_warehouse: NP_WareHouse, to_warehouse: NP_WareHouse,
+                        weight: float, seats_amount: int, cost: int, description: str, recipient_data: Recipient,
+                        payer_type: PayerType = PayerType.RECIPIENT, cargo_type: CargoType = CargoType.PARCEL,
+                        save=True):
+
+        sender = self.scrapping.counterparty.getCounterparties("Sender")[0]
+        contact_sender = self.scrapping.counterparty.getCounterpartyContactPersons(sender['Ref'])[0]
+
+        recipient = \
+            self.scrapping.counterparty.create_Counterparty("PrivatePerson", "Recipient", recipient_data.first_name,
+                                                            recipient_data.middle_name, recipient_data.last_name,
+                                                            recipient_data.phone)[0]
+        contact_recipient = recipient['ContactPerson']['data'][0]
+
+        response = self.scrapping.document.create_document(
+            PayerType=payer_type.value, PaymentMethod="Cash",
+            DateTime=datetime.now().strftime("%d.%m.%Y"),
+            CargoType=cargo_type.value,
+            Weight=weight, SeatsAmount=seats_amount,
+            Cost=cost, ServiceType="WarehouseWarehouse",
+            Description=description,
+
+            Sender=sender['Ref'],
+            ContactSender=contact_sender['Ref'], SendersPhone=contact_sender['Phones'],
+            CitySender=from_warehouse.City.Ref, SenderAddress=from_warehouse.Ref,
+
+            Recipient=recipient['Ref'],
+            ContactRecipient=contact_recipient['Ref'], RecipientsPhone=recipient_data.phone,
+            CityRecipient=to_warehouse.City.Ref, RecipientAddress=to_warehouse.Ref
+        )
+
+        if response is None:
+            return None
+
+        if save:
+            NP_Document(json=json.dumps(response))
+
+        return response['IntDocNumber']
 
     def track(self, track_number, phone=None):
 
