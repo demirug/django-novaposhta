@@ -4,7 +4,8 @@ from django.db import IntegrityError
 
 
 class NP_DirectJSONDataMixin:
-    def __init__(self, api_json: dict):
+    def __init__(self, api_json: dict, *args, **kwargs):
+        super(NP_DirectJSONDataMixin, self).__init__(*args, **kwargs)
         if api_json is None:
             return
 
