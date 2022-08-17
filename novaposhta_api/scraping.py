@@ -46,6 +46,14 @@ class _Address(_Model):
         return self._call("getCities", {})
 
 
+class _Common(_Model):
+    def __init__(self, client):
+        super(_Common, self).__init__(client, "Common")
+
+    def get_cargo_types(self):
+        return self._call("getCargoTypes", {})
+
+
 class _Tacking(_Model):
     def __init__(self, client):
         super().__init__(client, "TrackingDocument")
@@ -83,6 +91,10 @@ class NP_Scrapping(Singleton):
     @property
     def address(self):
         return _Address(self)
+
+    @property
+    def common(self):
+        return _Common(self)
 
     @property
     def tracking(self):

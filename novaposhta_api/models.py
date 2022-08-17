@@ -3,6 +3,20 @@ from django.db import models
 from .mixins import NP_JSONDataMixin
 
 
+class NP_CargoType(NP_JSONDataMixin, models.Model):
+    Ref = models.CharField(max_length=36, unique=True)
+    Description = models.CharField(max_length=36)
+
+    json = models.TextField()
+
+    class Meta:
+        verbose_name = "NP Cargo Type"
+        verbose_name_plural = "NP Cargo Types"
+
+    def __str__(self):
+        return self.Description
+
+
 class NP_WareHouseType(NP_JSONDataMixin, models.Model):
     Ref = models.CharField(max_length=36, unique=True)
 
