@@ -10,9 +10,7 @@ Client is based on `python 3.6`
 
 Required `aenum` package `pip install aenum`
 
-You can install package by using pip:
- 
-`pip install git+https://github.com/demirug/django-novaposhta`
+Required `django-filters` package `pip install django-filters`
 
 Add `novaposhta_api` to `INSTALLED_APPS`
 
@@ -97,3 +95,23 @@ __Updating/Rebuilding data__
     # Run updating data (adding new adresses to DB) 
     Novaposhta.updater.update_data()
 ```
+
+___
+## API
+
+__Register API url__
+```python
+
+urlpatterns = [
+    ''
+    path('api-np/', include(('novaposhta_api.api.urls', 'api-np'))),
+    ''
+]
+```
+
+__Available urls__
+````
+  List of areas: /api-np/areas
+  List of cities (filtering): /api-np/cities
+  List of warehouse types: /api-np/warehouse-type/
+  List of warehouses (filtering): /api-np/warehouse
