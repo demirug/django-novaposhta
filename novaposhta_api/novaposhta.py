@@ -71,6 +71,15 @@ class Recipient:
         self.phone = phone
 
 
+class OptionsSeat:
+    def __init__(self, volumetricVolume, volumetricWidth, volumetricLength, volumetricHeight, weight):
+        self.volumetricVolume = volumetricVolume
+        self.volumetricWidth = volumetricWidth
+        self.volumetricLength = volumetricLength
+        self.volumetricHeight = volumetricHeight
+        self.weight = weight
+
+
 class Novaposhta(Singleton):
 
     def __init__(self):
@@ -80,6 +89,7 @@ class Novaposhta(Singleton):
 
     def create_document(self, from_warehouse: NP_WareHouse, to_warehouse: NP_WareHouse,
                         weight: float, seats_amount: int, cost: int, description: str, recipient_data: Recipient,
+                        option_seat: OptionsSeat = OptionsSeat(1, 30, 30, 30, 20),
                         payer_type: PayerType = PayerType.RECIPIENT, cargo_type: CargoType = CargoType.PARCEL,
                         save=True):
 
@@ -103,10 +113,17 @@ class Novaposhta(Singleton):
             Sender=sender['Ref'],
             ContactSender=contact_sender['Ref'], SendersPhone=contact_sender['Phones'],
             CitySender=from_warehouse.City.Ref, SenderAddress=from_warehouse.Ref,
-
             Recipient=recipient['Ref'],
             ContactRecipient=contact_recipient['Ref'], RecipientsPhone=recipient_data.phone,
-            CityRecipient=to_warehouse.City.Ref, RecipientAddress=to_warehouse.Ref
+            CityRecipient=to_warehouse.City.Ref, RecipientAddress=to_warehouse.Ref,
+
+            OptionsSeat=[{
+                "volumetricVolume": option_seat.volumetricVolume,
+                "volumetricLength": option_seat.volumetricLength,
+                "volumetricWidth": option_seat.volumetricWidth,
+                "volumetricHeight": option_seat.volumetricHeight,
+                "weight": option_seat.weight
+            }]
         )
 
         if response is None:
