@@ -27,4 +27,4 @@ class WareHouseList(ListAPIView):
     queryset = NP_WareHouse.objects.all()
     serializer_class = WareHousesSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('City', 'Type', 'Number')
+    filterset_fields = ('City', 'Type', 'Number', 'WarehouseStatus')
