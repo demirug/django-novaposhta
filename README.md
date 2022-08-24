@@ -8,9 +8,13 @@ ___
 ## Installation
 Client is based on `python 3.6`
 
-Required `aenum` package `pip install aenum`
-
-Required `django-filters` package `pip install django-filters`
+__Required packages__
+````
+requests
+aenum 
+djangorestframework
+django-filter
+````
 
 Add `novaposhta_api` to `INSTALLED_APPS`
 
