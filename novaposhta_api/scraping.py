@@ -1,8 +1,5 @@
-import asyncio
 import json
-
 import httpx
-import requests
 
 from novaposhta_api.singleton import Singleton
 
