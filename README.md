@@ -10,7 +10,7 @@ Client is based on `python 3.6`
 
 __Required packages__
 ````
-requests
+httpx
 aenum 
 djangorestframework
 django-filter
