@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 from novaposhta_api.models import *
@@ -17,29 +18,36 @@ class Updater:
         NP_CargoType.objects.all().delete()
         self.update_data()
 
-    def update_data(self):
-        self.register_cargo_types()
-        self.register_warehouse_types()
-        self.register_areas()
-        self.register_cities()
-        self.register_warehouses()
+    async def _update_data(self):
+        await asyncio.gather(
+            self.register_cargo_types(),
+            self.register_warehouse_types(),
+            self.register_areas(),
+            self.register_cities(),
+            self.register_warehouses(),
+        )
 
-    def register_cargo_types(self):
-        for elem in self.scrapping.common.get_cargo_types():
+    def update_data(self):
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self._update_data())
+        loop.close()
+
+    async def register_cargo_types(self):
+        for elem in await self.scrapping.common.get_cargo_types():
             NP_CargoType(json=json.dumps(elem))
 
-    def register_warehouse_types(self):
-        for elem in self.scrapping.address.get_warehouse_types():
+    async def register_warehouse_types(self):
+        for elem in await self.scrapping.address.get_warehouse_types():
             NP_WareHouseType(json=json.dumps(elem))
 
-    def register_warehouses(self):
-        for elem in self.scrapping.address.get_warehouse_all():
+    async def register_warehouses(self):
+        for elem in await self.scrapping.address.get_warehouse_all():
             NP_WareHouse(json=json.dumps(elem))
 
-    def register_areas(self):
-        for elem in self.scrapping.address.get_areas():
+    async def register_areas(self):
+        for elem in await self.scrapping.address.get_areas():
             NP_Area(json=json.dumps(elem))
 
-    def register_cities(self):
-        for elem in self.scrapping.address.get_all_cities():
+    async def register_cities(self):
+        for elem in await self.scrapping.address.get_all_cities():
             NP_City(json=json.dumps(elem))
