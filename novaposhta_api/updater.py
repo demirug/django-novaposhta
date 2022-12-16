@@ -1,6 +1,8 @@
 import asyncio
 import json
 
+from asgiref.sync import async_to_sync
+
 from novaposhta_api.models import *
 from novaposhta_api.scraping import NP_Scrapping
 
@@ -34,20 +36,20 @@ class Updater:
 
     async def register_cargo_types(self):
         for elem in await self.scrapping.common.get_cargo_types():
-            NP_CargoType(json=json.dumps(elem))
+            async_to_sync(NP_CargoType)(json=json.dumps(elem))
 
     async def register_warehouse_types(self):
         for elem in await self.scrapping.address.get_warehouse_types():
-            NP_WareHouseType(json=json.dumps(elem))
+            async_to_sync(NP_WareHouseType)(json=json.dumps(elem))
 
     async def register_warehouses(self):
         for elem in await self.scrapping.address.get_warehouse_all():
-            NP_WareHouse(json=json.dumps(elem))
+            async_to_sync(NP_WareHouse)(json=json.dumps(elem))
 
     async def register_areas(self):
         for elem in await self.scrapping.address.get_areas():
-            NP_Area(json=json.dumps(elem))
+            async_to_sync(NP_Area)(json=json.dumps(elem))
 
     async def register_cities(self):
         for elem in await self.scrapping.address.get_all_cities():
-            NP_City(json=json.dumps(elem))
+            async_to_sync(NP_City)(json=json.dumps(elem))
